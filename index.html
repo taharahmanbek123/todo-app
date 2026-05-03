@@ -3,21 +3,9 @@
 <head>
   <title>Todo App</title>
   <style>
-    li {
-      cursor: pointer;
-      margin: 5px 0;
-    }
-
-    .done {
-      text-decoration: line-through;
-      color: gray;
-    }
-
-    .delete-btn {
-      margin-left: 10px;
-      color: red;
-      cursor: pointer;
-    }
+    li { cursor: pointer; margin: 5px 0; }
+    .done { text-decoration: line-through; color: gray; }
+    .delete-btn { margin-left: 10px; color: red; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -43,9 +31,7 @@
         let li = document.createElement("li");
         li.textContent = task.text;
 
-        if (task.done) {
-          li.classList.add("done");
-        }
+        if (task.done) li.classList.add("done");
 
         li.onclick = function () {
           tasks[index].done = !tasks[index].done;
