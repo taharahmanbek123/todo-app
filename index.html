@@ -27,19 +27,6 @@
       margin-bottom: 10px;
     }
 
-    .filters {
-      margin-bottom: 10px;
-    }
-
-    .filters button {
-      margin: 2px;
-      padding: 6px 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      background: #eee;
-    }
-
     input {
       width: 65%;
       padding: 10px;
@@ -47,20 +34,22 @@
       border-radius: 8px;
     }
 
-    .add-btn {
+    button {
       padding: 10px 12px;
-      margin-left: 5px;
+      margin: 5px;
       border: none;
       border-radius: 8px;
-      background: #4a6cf7;
-      color: white;
       cursor: pointer;
-      transition: 0.3s;
     }
 
-    .add-btn:hover {
-      transform: scale(1.05);
-      background: #3557d6;
+    .add-btn {
+      background: #4a6cf7;
+      color: white;
+    }
+
+    .clear-btn {
+      background: red;
+      color: white;
     }
 
     ul {
@@ -77,12 +66,6 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
 
     .done {
@@ -94,7 +77,6 @@
       color: red;
       cursor: pointer;
       font-weight: bold;
-      margin-left: 10px;
     }
   </style>
 </head>
@@ -104,29 +86,18 @@
   <div class="container">
     <h1>My Todo App</h1>
 
-    <div class="filters">
-      <button onclick="setFilter('all')">All</button>
-      <button onclick="setFilter('active')">Active</button>
-      <button onclick="setFilter('done')">Done</button>
-    </div>
-
     <input type="text" id="taskInput" placeholder="Add task">
     <button class="add-btn" onclick="addTask()">Add</button>
+    <button class="clear-btn" onclick="clearAll()">Clear All</button>
 
     <ul id="taskList"></ul>
   </div>
 
   <script>
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
-    let filter = "all";
 
     function saveTasks() {
       localStorage.setItem("tasks", JSON.stringify(tasks));
-    }
-
-    function setFilter(type) {
-      filter = type;
-      renderTasks();
     }
 
     function renderTasks() {
@@ -134,10 +105,6 @@
       list.innerHTML = "";
 
       tasks.forEach((task, index) => {
-
-        if (filter === "active" && task.done) return;
-        if (filter === "done" && !task.done) return;
-
         let li = document.createElement("li");
 
         let span = document.createElement("span");
@@ -180,6 +147,12 @@
       tasks.push({ text: task, done: false });
 
       input.value = "";
+      saveTasks();
+      renderTasks();
+    }
+
+    function clearAll() {
+      tasks = [];
       saveTasks();
       renderTasks();
     }
