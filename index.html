@@ -24,7 +24,20 @@
     }
 
     h1 {
-      margin-bottom: 15px;
+      margin-bottom: 10px;
+    }
+
+    .filters {
+      margin-bottom: 10px;
+    }
+
+    .filters button {
+      margin: 2px;
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #eee;
     }
 
     input {
@@ -32,10 +45,9 @@
       padding: 10px;
       border: 1px solid #ddd;
       border-radius: 8px;
-      outline: none;
     }
 
-    button {
+    .add-btn {
       padding: 10px 12px;
       margin-left: 5px;
       border: none;
@@ -46,9 +58,9 @@
       transition: 0.3s;
     }
 
-    button:hover {
-      background: #3557d6;
+    .add-btn:hover {
       transform: scale(1.05);
+      background: #3557d6;
     }
 
     ul {
@@ -62,24 +74,15 @@
       padding: 10px;
       background: #f7f7f7;
       border-radius: 8px;
-      cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
-
-      /* انیمیشن ورود */
       animation: fadeIn 0.3s ease;
     }
 
     @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .done {
@@ -101,17 +104,29 @@
   <div class="container">
     <h1>My Todo App</h1>
 
+    <div class="filters">
+      <button onclick="setFilter('all')">All</button>
+      <button onclick="setFilter('active')">Active</button>
+      <button onclick="setFilter('done')">Done</button>
+    </div>
+
     <input type="text" id="taskInput" placeholder="Add task">
-    <button onclick="addTask()">Add</button>
+    <button class="add-btn" onclick="addTask()">Add</button>
 
     <ul id="taskList"></ul>
   </div>
 
   <script>
     let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let filter = "all";
 
     function saveTasks() {
       localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function setFilter(type) {
+      filter = type;
+      renderTasks();
     }
 
     function renderTasks() {
@@ -119,6 +134,10 @@
       list.innerHTML = "";
 
       tasks.forEach((task, index) => {
+
+        if (filter === "active" && task.done) return;
+        if (filter === "done" && !task.done) return;
+
         let li = document.createElement("li");
 
         let span = document.createElement("span");
