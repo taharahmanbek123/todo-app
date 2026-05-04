@@ -18,16 +18,16 @@
       background: white;
       padding: 20px;
       border-radius: 14px;
-      width: 340px;
+      width: 360px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
       text-align: center;
     }
 
-    input {
-      width: 65%;
+    input, select {
       padding: 10px;
-      border: 1px solid #ddd;
+      margin: 5px;
       border-radius: 8px;
+      border: 1px solid #ddd;
     }
 
     button {
@@ -40,11 +40,6 @@
 
     .add-btn {
       background: #4a6cf7;
-      color: white;
-    }
-
-    .clear-btn {
-      background: red;
       color: white;
     }
 
@@ -69,14 +64,20 @@
       color: gray;
     }
 
-    .delete-btn {
-      color: red;
-      cursor: pointer;
-      font-weight: bold;
+    .tag {
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      margin-left: 8px;
+      color: white;
     }
 
-    .edit-btn {
-      color: blue;
+    .work { background: #4a6cf7; }
+    .study { background: green; }
+    .personal { background: crimson; }
+
+    .delete-btn {
+      color: red;
       cursor: pointer;
       margin-left: 8px;
     }
@@ -89,8 +90,14 @@
     <h1>My Todo App</h1>
 
     <input type="text" id="taskInput" placeholder="Add task">
+
+    <select id="category">
+      <option value="work">Work</option>
+      <option value="study">Study</option>
+      <option value="personal">Personal</option>
+    </select>
+
     <button class="add-btn" onclick="addTask()">Add</button>
-    <button class="clear-btn" onclick="clearAll()">Clear All</button>
 
     <ul id="taskList"></ul>
   </div>
@@ -122,7 +129,10 @@
           renderTasks();
         };
 
-        // Delete
+        let tag = document.createElement("span");
+        tag.textContent = task.category;
+        tag.className = "tag " + task.category;
+
         let del = document.createElement("span");
         del.textContent = "❌";
         del.className = "delete-btn";
@@ -134,23 +144,8 @@
           renderTasks();
         };
 
-        // Edit
-        let edit = document.createElement("span");
-        edit.textContent = "✏️";
-        edit.className = "edit-btn";
-
-        edit.onclick = function (e) {
-          e.stopPropagation();
-          let newText = prompt("Edit task:", task.text);
-          if (newText !== null && newText !== "") {
-            tasks[index].text = newText;
-            saveTasks();
-            renderTasks();
-          }
-        };
-
         li.appendChild(span);
-        li.appendChild(edit);
+        li.appendChild(tag);
         li.appendChild(del);
 
         list.appendChild(li);
@@ -159,19 +154,17 @@
 
     function addTask() {
       let input = document.getElementById("taskInput");
-      let task = input.value;
+      let category = document.getElementById("category").value;
 
-      if (task === "") return;
+      if (input.value === "") return;
 
-      tasks.push({ text: task, done: false });
+      tasks.push({
+        text: input.value,
+        done: false,
+        category: category
+      });
 
       input.value = "";
-      saveTasks();
-      renderTasks();
-    }
-
-    function clearAll() {
-      tasks = [];
       saveTasks();
       renderTasks();
     }
