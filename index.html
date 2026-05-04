@@ -1,98 +1,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>My Todo App</title>
+  <title>Notes App</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#4a6cf7">
-  <link rel="manifest" href="manifest.json">
 
   <style>
     body {
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #74ebd5, #9face6);
+      margin: 0;
       display: flex;
       justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      padding: 20px;
     }
 
     .container {
+      width: 380px;
       background: white;
       padding: 20px;
       border-radius: 14px;
-      width: 360px;
       box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      text-align: center;
     }
 
     h1 {
-      margin-bottom: 10px;
+      text-align: center;
     }
 
-    input {
-      width: 65%;
+    input, select {
+      width: 100%;
       padding: 10px;
-      border: 1px solid #ddd;
+      margin-top: 8px;
       border-radius: 8px;
+      border: 1px solid #ddd;
     }
 
     button {
-      padding: 10px 12px;
-      margin: 5px;
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
       border: none;
       border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .add-btn {
       background: #4a6cf7;
       color: white;
+      cursor: pointer;
     }
 
-    .clear-btn {
-      background: red;
-      color: white;
-    }
-
-    ul {
-      padding: 0;
-      margin-top: 15px;
-    }
-
-    li {
-      list-style: none;
-      margin: 10px 0;
-      padding: 10px;
+    .note {
       background: #f7f7f7;
-      border-radius: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      animation: fadeIn 0.3s ease;
+      padding: 10px;
+      border-radius: 10px;
+      margin-top: 10px;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .tag {
+      font-size: 12px;
+      padding: 2px 6px;
+      border-radius: 6px;
+      color: white;
+      margin-left: 5px;
     }
 
-    .done {
-      text-decoration: line-through;
-      color: gray;
+    .work { background: #4a6cf7; }
+    .study { background: green; }
+    .personal { background: crimson; }
+
+    .actions {
+      margin-top: 8px;
     }
 
-    .delete-btn {
-      color: red;
+    .actions span {
       cursor: pointer;
-      margin-left: 8px;
+      margin-right: 10px;
+      font-size: 14px;
     }
 
-    .edit-btn {
-      color: blue;
-      cursor: pointer;
-      margin-left: 8px;
+    .delete { color: red; }
+    .edit { color: blue; }
+
+    .search {
+      margin-top: 15px;
     }
   </style>
 </head>
@@ -100,104 +87,89 @@
 <body>
 
   <div class="container">
-    <h1>My Todo App</h1>
+    <h1>Notes App</h1>
 
-    <input type="text" id="taskInput" placeholder="Add task">
-    <button class="add-btn" onclick="addTask()">Add</button>
-    <button class="clear-btn" onclick="clearAll()">Clear All</button>
+    <input type="text" id="noteInput" placeholder="Write note">
 
-    <ul id="taskList"></ul>
+    <select id="category">
+      <option value="work">Work</option>
+      <option value="study">Study</option>
+      <option value="personal">Personal</option>
+    </select>
+
+    <button onclick="addNote()">Add Note</button>
+
+    <input class="search" type="text" id="search" placeholder="Search notes..." oninput="renderNotes()">
+
+    <div id="notesList"></div>
   </div>
 
   <script>
-    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+    let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
-    function saveTasks() {
-      localStorage.setItem("tasks", JSON.stringify(tasks));
+    function save() {
+      localStorage.setItem("notes", JSON.stringify(notes));
     }
 
-    function renderTasks() {
-      let list = document.getElementById("taskList");
+    function addNote() {
+      let text = document.getElementById("noteInput").value;
+      let cat = document.getElementById("category").value;
+
+      if (text === "") return;
+
+      notes.push({
+        text: text,
+        category: cat
+      });
+
+      document.getElementById("noteInput").value = "";
+
+      save();
+      renderNotes();
+    }
+
+    function deleteNote(i) {
+      notes.splice(i, 1);
+      save();
+      renderNotes();
+    }
+
+    function editNote(i) {
+      let newText = prompt("Edit note:", notes[i].text);
+      if (newText) {
+        notes[i].text = newText;
+        save();
+        renderNotes();
+      }
+    }
+
+    function renderNotes() {
+      let list = document.getElementById("notesList");
+      let search = document.getElementById("search").value.toLowerCase();
+
       list.innerHTML = "";
 
-      tasks.forEach((task, index) => {
-        let li = document.createElement("li");
+      notes.forEach((note, i) => {
 
-        let span = document.createElement("span");
-        span.textContent = task.text;
+        if (!note.text.toLowerCase().includes(search)) return;
 
-        if (task.done) {
-          span.classList.add("done");
-        }
+        let div = document.createElement("div");
+        div.className = "note";
 
-        span.onclick = function () {
-          tasks[index].done = !tasks[index].done;
-          saveTasks();
-          renderTasks();
-        };
+        div.innerHTML = `
+          ${note.text}
+          <span class="tag ${note.category}">${note.category}</span>
+          <div class="actions">
+            <span class="edit" onclick="editNote(${i})">✏️ Edit</span>
+            <span class="delete" onclick="deleteNote(${i})">❌ Delete</span>
+          </div>
+        `;
 
-        // Edit
-        let edit = document.createElement("span");
-        edit.textContent = "✏️";
-        edit.className = "edit-btn";
-
-        edit.onclick = function (e) {
-          e.stopPropagation();
-          let newText = prompt("Edit task:", task.text);
-          if (newText) {
-            tasks[index].text = newText;
-            saveTasks();
-            renderTasks();
-          }
-        };
-
-        // Delete
-        let del = document.createElement("span");
-        del.textContent = "❌";
-        del.className = "delete-btn";
-
-        del.onclick = function (e) {
-          e.stopPropagation();
-          tasks.splice(index, 1);
-          saveTasks();
-          renderTasks();
-        };
-
-        li.appendChild(span);
-        li.appendChild(edit);
-        li.appendChild(del);
-
-        list.appendChild(li);
+        list.appendChild(div);
       });
     }
 
-    function addTask() {
-      let input = document.getElementById("taskInput");
-
-      if (input.value === "") return;
-
-      tasks.push({
-        text: input.value,
-        done: false
-      });
-
-      input.value = "";
-      saveTasks();
-      renderTasks();
-    }
-
-    function clearAll() {
-      tasks = [];
-      saveTasks();
-      renderTasks();
-    }
-
-    // Service Worker (PWA)
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("sw.js");
-    }
-
-    renderTasks();
+    renderNotes();
   </script>
 
 </body>
