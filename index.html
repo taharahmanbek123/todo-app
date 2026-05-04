@@ -23,10 +23,6 @@
       text-align: center;
     }
 
-    h1 {
-      margin-bottom: 10px;
-    }
-
     input {
       width: 65%;
       padding: 10px;
@@ -35,8 +31,8 @@
     }
 
     button {
-      padding: 10px 12px;
-      margin: 5px;
+      padding: 8px 10px;
+      margin: 3px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
@@ -77,6 +73,12 @@
       color: red;
       cursor: pointer;
       font-weight: bold;
+    }
+
+    .edit-btn {
+      color: blue;
+      cursor: pointer;
+      margin-left: 8px;
     }
   </style>
 </head>
@@ -120,19 +122,36 @@
           renderTasks();
         };
 
-        let btn = document.createElement("span");
-        btn.textContent = "❌";
-        btn.className = "delete-btn";
+        // Delete
+        let del = document.createElement("span");
+        del.textContent = "❌";
+        del.className = "delete-btn";
 
-        btn.onclick = function (e) {
+        del.onclick = function (e) {
           e.stopPropagation();
           tasks.splice(index, 1);
           saveTasks();
           renderTasks();
         };
 
+        // Edit
+        let edit = document.createElement("span");
+        edit.textContent = "✏️";
+        edit.className = "edit-btn";
+
+        edit.onclick = function (e) {
+          e.stopPropagation();
+          let newText = prompt("Edit task:", task.text);
+          if (newText !== null && newText !== "") {
+            tasks[index].text = newText;
+            saveTasks();
+            renderTasks();
+          }
+        };
+
         li.appendChild(span);
-        li.appendChild(btn);
+        li.appendChild(edit);
+        li.appendChild(del);
 
         list.appendChild(li);
       });
