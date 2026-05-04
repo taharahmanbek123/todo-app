@@ -1,2 +1,129 @@
-<input type="text" id="taskInput" placeholder="Add task">
-<button onclick="addTask()">Add</button>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Todo App</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    input {
+      width: 70%;
+      padding: 8px;
+    }
+
+    button {
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    ul {
+      padding: 0;
+      margin-top: 15px;
+    }
+
+    li {
+      list-style: none;
+      margin: 8px 0;
+      cursor: pointer;
+    }
+
+    .done {
+      text-decoration: line-through;
+      color: gray;
+    }
+
+    .delete-btn {
+      margin-left: 10px;
+      color: red;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+    <h1>My Todo App</h1>
+
+    <input type="text" id="taskInput" placeholder="Add task">
+    <button onclick="addTask()">Add</button>
+
+    <ul id="taskList"></ul>
+  </div>
+
+  <script>
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      let list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      tasks.forEach((task, index) => {
+        let li = document.createElement("li");
+        li.textContent = task.text;
+
+        if (task.done) {
+          li.classList.add("done");
+        }
+
+        li.onclick = function () {
+          tasks[index].done = !tasks[index].done;
+          saveTasks();
+          renderTasks();
+        };
+
+        let btn = document.createElement("span");
+        btn.textContent = " ❌";
+        btn.className = "delete-btn";
+
+        btn.onclick = function (e) {
+          e.stopPropagation();
+          tasks.splice(index, 1);
+          saveTasks();
+          renderTasks();
+        };
+
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+
+    function addTask() {
+      let input = document.getElementById("taskInput");
+      let task = input.value;
+
+      if (task === "") return;
+
+      tasks.push({ text: task, done: false });
+
+      input.value = "";
+      saveTasks();
+      renderTasks();
+    }
+
+    renderTasks();
+  </script>
+
+</body>
+</html>
