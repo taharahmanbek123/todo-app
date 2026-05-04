@@ -1,137 +1,134 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Notes App Pro</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Notes Pro App</title>
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #74ebd5, #9face6);
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+  }
 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #74ebd5, #9face6);
-      margin: 0;
-      display: flex;
-      justify-content: center;
-      padding: 20px;
-    }
+  .container {
+    width: 420px;
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  }
 
-    .container {
-      width: 420px;
-      background: white;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    }
+  h1 {
+    text-align: center;
+    margin-bottom: 10px;
+  }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
+  input, select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
 
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 8px;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      box-sizing: border-box;
-    }
+  button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #4a6cf7;
+    color: white;
+    cursor: pointer;
+  }
 
-    button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-      border: none;
-      border-radius: 8px;
-      background: #4a6cf7;
-      color: white;
-      cursor: pointer;
-    }
+  .note {
+    background: #f7f7f7;
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+    animation: fadeIn 0.2s ease;
+  }
 
-    .top-row {
-      display: flex;
-      gap: 8px;
-    }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-    .top-row select {
-      flex: 1;
-    }
+  .tag {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    color: white;
+    margin-left: 6px;
+  }
 
-    .note {
-      background: #f7f7f7;
-      padding: 10px;
-      border-radius: 10px;
-      margin-top: 10px;
-      animation: fadeIn 0.25s ease;
-    }
+  .work { background: #4a6cf7; }
+  .study { background: green; }
+  .personal { background: crimson; }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+  .actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 14px;
+  }
 
-    .tag {
-      font-size: 12px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      color: white;
-      margin-left: 6px;
-    }
+  .actions span {
+    cursor: pointer;
+  }
 
-    .work { background: #4a6cf7; }
-    .study { background: green; }
-    .personal { background: crimson; }
+  .delete { color: red; }
+  .edit { color: blue; }
 
-    .actions {
-      margin-top: 8px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 14px;
-    }
+  .stats {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #555;
+  }
 
-    .actions span {
-      cursor: pointer;
-    }
+  .search {
+    margin-top: 12px;
+  }
 
-    .delete { color: red; }
-    .edit { color: blue; }
+  .top {
+    display: flex;
+    gap: 8px;
+  }
+</style>
 
-    .search {
-      margin-top: 15px;
-    }
-
-    .stats {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #555;
-      text-align: center;
-    }
-  </style>
 </head>
 
 <body>
 
-  <div class="container">
-    <h1>Notes Pro</h1>
+<div class="container">
+  <h1>Notes Pro</h1>
 
-    <input type="text" id="noteInput" placeholder="Write your note">
+  <input id="noteInput" type="text" placeholder="Write your note">
 
-    <div class="top-row">
-      <select id="category">
-        <option value="work">Work</option>
-        <option value="study">Study</option>
-        <option value="personal">Personal</option>
-      </select>
-    </div>
-
-    <button onclick="addNote()">Add Note</button>
-
-    <input class="search" type="text" id="search" placeholder="Search notes..." oninput="render()">
-
-    <div class="stats" id="stats"></div>
-
-    <div id="list"></div>
+  <div class="top">
+    <select id="category">
+      <option value="work">Work</option>
+      <option value="study">Study</option>
+      <option value="personal">Personal</option>
+    </select>
   </div>
+
+  <button onclick="addNote()">Add Note</button>
+
+  <input id="search" class="search" placeholder="Search..." oninput="render()">
+
+  <div class="stats" id="stats"></div>
+
+  <div id="list"></div>
+</div>
 
 <script>
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
@@ -141,19 +138,18 @@ function save() {
 }
 
 function addNote() {
-  let text = document.getElementById("noteInput").value;
-  let cat = document.getElementById("category").value;
+  const text = document.getElementById("noteInput").value.trim();
+  const category = document.getElementById("category").value;
 
   if (!text) return;
 
   notes.unshift({
     text,
-    category: cat,
+    category,
     time: new Date().toLocaleString()
   });
 
   document.getElementById("noteInput").value = "";
-
   save();
   render();
 }
@@ -165,25 +161,26 @@ function deleteNote(i) {
 }
 
 function editNote(i) {
-  let newText = prompt("Edit note:", notes[i].text);
-  if (newText) {
-    notes[i].text = newText;
+  const newText = prompt("Edit note:", notes[i].text);
+  if (newText !== null && newText.trim() !== "") {
+    notes[i].text = newText.trim();
     save();
     render();
   }
 }
 
 function render() {
-  let list = document.getElementById("list");
-  let search = document.getElementById("search").value.toLowerCase();
+  const list = document.getElementById("list");
+  const search = document.getElementById("search").value.toLowerCase();
 
   list.innerHTML = "";
 
-  let filtered = notes.filter(n => n.text.toLowerCase().includes(search));
+  const filtered = notes.filter(n =>
+    n.text.toLowerCase().includes(search)
+  );
 
   filtered.forEach((n, i) => {
-
-    let div = document.createElement("div");
+    const div = document.createElement("div");
     div.className = "note";
 
     div.innerHTML = `
