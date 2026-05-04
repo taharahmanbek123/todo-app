@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Notes App</title>
+  <title>Notes App Pro</title>
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -16,7 +16,7 @@
     }
 
     .container {
-      width: 380px;
+      width: 420px;
       background: white;
       padding: 20px;
       border-radius: 14px;
@@ -25,6 +25,7 @@
 
     h1 {
       text-align: center;
+      margin-bottom: 10px;
     }
 
     input, select {
@@ -33,6 +34,7 @@
       margin-top: 8px;
       border-radius: 8px;
       border: 1px solid #ddd;
+      box-sizing: border-box;
     }
 
     button {
@@ -46,11 +48,26 @@
       cursor: pointer;
     }
 
+    .top-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .top-row select {
+      flex: 1;
+    }
+
     .note {
       background: #f7f7f7;
       padding: 10px;
       border-radius: 10px;
       margin-top: 10px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .tag {
@@ -58,7 +75,7 @@
       padding: 2px 6px;
       border-radius: 6px;
       color: white;
-      margin-left: 5px;
+      margin-left: 6px;
     }
 
     .work { background: #4a6cf7; }
@@ -67,12 +84,13 @@
 
     .actions {
       margin-top: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
     }
 
     .actions span {
       cursor: pointer;
-      margin-right: 10px;
-      font-size: 14px;
     }
 
     .delete { color: red; }
@@ -81,96 +99,115 @@
     .search {
       margin-top: 15px;
     }
+
+    .stats {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #555;
+      text-align: center;
+    }
   </style>
 </head>
 
 <body>
 
   <div class="container">
-    <h1>Notes App</h1>
+    <h1>Notes Pro</h1>
 
-    <input type="text" id="noteInput" placeholder="Write note">
+    <input type="text" id="noteInput" placeholder="Write your note">
 
-    <select id="category">
-      <option value="work">Work</option>
-      <option value="study">Study</option>
-      <option value="personal">Personal</option>
-    </select>
+    <div class="top-row">
+      <select id="category">
+        <option value="work">Work</option>
+        <option value="study">Study</option>
+        <option value="personal">Personal</option>
+      </select>
+    </div>
 
     <button onclick="addNote()">Add Note</button>
 
-    <input class="search" type="text" id="search" placeholder="Search notes..." oninput="renderNotes()">
+    <input class="search" type="text" id="search" placeholder="Search notes..." oninput="render()">
 
-    <div id="notesList"></div>
+    <div class="stats" id="stats"></div>
+
+    <div id="list"></div>
   </div>
 
-  <script>
-    let notes = JSON.parse(localStorage.getItem("notes")) || [];
+<script>
+let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
-    function save() {
-      localStorage.setItem("notes", JSON.stringify(notes));
-    }
+function save() {
+  localStorage.setItem("notes", JSON.stringify(notes));
+}
 
-    function addNote() {
-      let text = document.getElementById("noteInput").value;
-      let cat = document.getElementById("category").value;
+function addNote() {
+  let text = document.getElementById("noteInput").value;
+  let cat = document.getElementById("category").value;
 
-      if (text === "") return;
+  if (!text) return;
 
-      notes.push({
-        text: text,
-        category: cat
-      });
+  notes.unshift({
+    text,
+    category: cat,
+    time: new Date().toLocaleString()
+  });
 
-      document.getElementById("noteInput").value = "";
+  document.getElementById("noteInput").value = "";
 
-      save();
-      renderNotes();
-    }
+  save();
+  render();
+}
 
-    function deleteNote(i) {
-      notes.splice(i, 1);
-      save();
-      renderNotes();
-    }
+function deleteNote(i) {
+  notes.splice(i, 1);
+  save();
+  render();
+}
 
-    function editNote(i) {
-      let newText = prompt("Edit note:", notes[i].text);
-      if (newText) {
-        notes[i].text = newText;
-        save();
-        renderNotes();
-      }
-    }
+function editNote(i) {
+  let newText = prompt("Edit note:", notes[i].text);
+  if (newText) {
+    notes[i].text = newText;
+    save();
+    render();
+  }
+}
 
-    function renderNotes() {
-      let list = document.getElementById("notesList");
-      let search = document.getElementById("search").value.toLowerCase();
+function render() {
+  let list = document.getElementById("list");
+  let search = document.getElementById("search").value.toLowerCase();
 
-      list.innerHTML = "";
+  list.innerHTML = "";
 
-      notes.forEach((note, i) => {
+  let filtered = notes.filter(n => n.text.toLowerCase().includes(search));
 
-        if (!note.text.toLowerCase().includes(search)) return;
+  filtered.forEach((n, i) => {
 
-        let div = document.createElement("div");
-        div.className = "note";
+    let div = document.createElement("div");
+    div.className = "note";
 
-        div.innerHTML = `
-          ${note.text}
-          <span class="tag ${note.category}">${note.category}</span>
-          <div class="actions">
-            <span class="edit" onclick="editNote(${i})">✏️ Edit</span>
-            <span class="delete" onclick="deleteNote(${i})">❌ Delete</span>
-          </div>
-        `;
+    div.innerHTML = `
+      <div>
+        ${n.text}
+        <span class="tag ${n.category}">${n.category}</span>
+      </div>
+      <small>${n.time}</small>
 
-        list.appendChild(div);
-      });
-    }
+      <div class="actions">
+        <span class="edit" onclick="editNote(${i})">✏️ Edit</span>
+        <span class="delete" onclick="deleteNote(${i})">❌ Delete</span>
+      </div>
+    `;
 
-    renderNotes();
-  </script>
+    list.appendChild(div);
+  });
+
+  document.getElementById("stats").innerText =
+    `Total Notes: ${notes.length}`;
+}
+
+render();
+</script>
 
 </body>
 </html>
